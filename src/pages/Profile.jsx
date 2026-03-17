@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../contexts/AuthContext";
-import { Mail, Calendar, Edit2, User } from "lucide-react";
+import { Calendar, Edit2, User, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function Profile() {
@@ -82,27 +82,46 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-600">Loading profile...</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--navy)' }}>
+        <div style={{ color: 'var(--slate)' }}>Loading profile...</div>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-600">Profile not found</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--navy)' }}>
+        <div style={{ color: 'var(--slate)' }}>Profile not found</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-5xl mx-auto px-4">
+    <div className="min-h-screen py-12" style={{ background: 'var(--navy)' }}>
+      <div className="section-container max-w-4xl">
+        {/* Back Link */}
+        <Link
+          to="/"
+          className="inline-flex items-center space-x-2 mb-8 transition-colors hover:text-[var(--green)]"
+          style={{ color: 'var(--green)' }}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to posts</span>
+        </Link>
+
         {/* Profile Header */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
-          <div className="flex items-start space-x-6">
-            <div className="h-24 w-24 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+        <div
+          className="rounded-lg p-8 mb-6"
+          style={{
+            background: 'var(--light-navy)',
+            border: '1px solid var(--lightest-navy)'
+          }}
+        >
+          <div className="flex flex-col md:flex-row items-start space-y-6 md:space-y-0 md:space-x-6">
+            <div
+              className="h-24 w-24 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ background: 'var(--green-tint)' }}
+            >
               {profile.avatar_url ? (
                 <img
                   src={profile.avatar_url}
@@ -110,22 +129,25 @@ export default function Profile() {
                   className="h-24 w-24 rounded-full"
                 />
               ) : (
-                <User className="h-12 w-12 text-indigo-600" />
+                <User className="h-12 w-12" style={{ color: 'var(--green)' }} />
               )}
             </div>
 
             <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-start justify-between mb-2">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">
+                  <h1
+                    className="text-3xl font-bold"
+                    style={{ color: 'var(--lightest-slate)' }}
+                  >
                     {profile.full_name || profile.username}
                   </h1>
-                  <p className="text-gray-600">@{profile.username}</p>
+                  <p style={{ color: 'var(--slate)' }}>@{profile.username}</p>
                 </div>
                 {isOwnProfile && !editing && (
                   <button
                     onClick={() => setEditing(true)}
-                    className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                    className="btn-secondary flex items-center space-x-2"
                   >
                     <Edit2 className="h-4 w-4" />
                     <span>Edit Profile</span>
@@ -133,14 +155,12 @@ export default function Profile() {
                 )}
               </div>
 
-              <div className="flex items-center space-x-4 text-sm text-gray-600 mb-4">
+              <div className="flex items-center space-x-4 text-sm mb-4" style={{ color: 'var(--slate)' }}>
                 <span className="flex items-center space-x-1">
                   <Calendar className="h-4 w-4" />
-                  <span>
-                    Joined {new Date(profile.created_at).toLocaleDateString()}
-                  </span>
+                  <span>Joined {new Date(profile.created_at).toLocaleDateString()}</span>
                 </span>
-                <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-medium">
+                <span className="tag">
                   {profile.role || "Writer"}
                 </span>
               </div>
@@ -152,12 +172,12 @@ export default function Profile() {
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Tell us about yourself..."
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="textarea-field"
                   />
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-3">
                     <button
                       onClick={handleUpdateBio}
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                      className="btn-primary"
                     >
                       Save
                     </button>
@@ -166,42 +186,58 @@ export default function Profile() {
                         setEditing(false);
                         setBio(profile.bio || "");
                       }}
-                      className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                      className="btn-secondary"
                     >
                       Cancel
                     </button>
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-700">{profile.bio || "No bio yet"}</p>
+                <p style={{ color: 'var(--light-slate)' }}>
+                  {profile.bio || "No bio yet"}
+                </p>
               )}
             </div>
           </div>
         </div>
 
         {/* User Posts */}
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <div
+          className="rounded-lg p-8"
+          style={{
+            background: 'var(--light-navy)',
+            border: '1px solid var(--lightest-navy)'
+          }}
+        >
+          <h2
+            className="text-2xl font-bold mb-6"
+            style={{ color: 'var(--lightest-slate)' }}
+          >
             Posts ({posts.length})
           </h2>
 
           {posts.length === 0 ? (
-            <p className="text-gray-600 text-center py-8">No posts yet</p>
+            <p className="text-center py-8" style={{ color: 'var(--slate)' }}>No posts yet</p>
           ) : (
             <div className="space-y-4">
               {posts.map((post) => (
                 <Link
                   key={post.id}
                   to={`/post/${post.id}`}
-                  className="block p-4 border border-gray-200 rounded-lg hover:border-indigo-500 hover:shadow-md transition"
+                  className="block p-4 rounded-lg transition-all"
+                  style={{
+                    background: 'var(--navy)',
+                    border: '1px solid var(--lightest-navy)'
+                  }}
                 >
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <h3
+                    className="text-xl font-semibold mb-2 transition-colors hover:text-[var(--green)]"
+                    style={{ color: 'var(--lightest-slate)' }}
+                  >
                     {post.title}
                   </h3>
-                  <div className="flex items-center space-x-4 text-sm text-gray-600">
-                    <span>
-                      {new Date(post.created_at).toLocaleDateString()}
-                    </span>
+                  <div className="flex items-center space-x-4 text-sm" style={{ color: 'var(--slate)' }}>
+                    <span>{new Date(post.created_at).toLocaleDateString()}</span>
                     <span>{post.views || 0} views</span>
                   </div>
                 </Link>
