@@ -2,77 +2,334 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Brittany Chiang-inspired Color Palette */
+:root {
+  color-scheme: dark;
+
+  /* Core colors */
+  --navy: #0a192f;
+  --light-navy: #112240;
+  --lightest-navy: #233554;
+  --navy-shadow: rgba(2, 12, 27, 0.7);
+
+  /* Text colors */
+  --slate: #8892b0;
+  --light-slate: #a8b2d1;
+  --lightest-slate: #ccd6f6;
+  --white: #e6f1ff;
+
+  /* Accent */
+  --green: #64ffda;
+  --green-tint: rgba(100, 255, 218, 0.1);
+
+  /* Gradients */
+  --bg-gradient: linear-gradient(180deg, var(--navy) 0%, #020c1b 100%);
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
-}
-
-/* Notion-like Editor Styles */
-.notion-editor .ProseMirror {
-  @apply min-h-[500px] px-24 py-12 focus:outline-none;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
-    "Apple Color Emoji", Arial, sans-serif;
+  min-height: 100vh;
+  background-color: var(--navy);
+  color: var(--slate);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
   line-height: 1.6;
-  color: rgb(55, 53, 47);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Subtle grid background pattern */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(100, 255, 218, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 255, 218, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.4;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--lightest-slate);
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 1rem 0;
+}
+
+h1 { font-size: clamp(2rem, 5vw, 3rem); }
+h2 { font-size: clamp(1.5rem, 4vw, 2rem); }
+h3 { font-size: clamp(1.25rem, 3vw, 1.5rem); }
+
+a {
+  color: var(--green);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--green);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--navy);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--lightest-navy);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--slate);
+}
+
+::selection {
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+/* Utility Classes */
+@layer components {
+  /* Section container */
+  .section-container {
+    @apply mx-auto w-full max-w-6xl px-6 sm:px-8 lg:px-12;
+  }
+
+  /* Glass card effect */
+  .glass-card {
+    background: var(--light-navy);
+    border: 1px solid rgba(100, 255, 218, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px -15px var(--navy-shadow);
+    transition: all 0.25s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 30px -15px var(--navy-shadow);
+    border-color: rgba(100, 255, 218, 0.2);
+  }
+
+  /* Primary button - outlined with accent */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded;
+    background: transparent;
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--green-tint);
+    transform: translateY(-2px);
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded;
+    background: var(--light-navy);
+    border: 1px solid var(--lightest-navy);
+    color: var(--lightest-slate);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background: var(--lightest-navy);
+    border-color: var(--slate);
+  }
+
+  /* Section heading with accent line */
+  .section-heading {
+    @apply flex items-center gap-4 mb-8;
+    color: var(--lightest-slate);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 600;
+  }
+
+  .section-heading::before {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--lightest-navy);
+  }
+
+  .section-heading::after {
+    content: "";
+    display: block;
+    flex: 1;
+    height: 1px;
+    background: var(--lightest-navy);
+    margin-left: 1rem;
+  }
+
+  /* Tag/Badge */
+  .tag {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+    background: var(--green-tint);
+    color: var(--green);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+  }
+
+  /* Form inputs */
+  .input-field {
+    @apply w-full px-4 py-3 rounded;
+    background: var(--light-navy);
+    border: 1px solid var(--lightest-navy);
+    color: var(--lightest-slate);
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .input-field::placeholder {
+    color: var(--slate);
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 2px var(--green-tint);
+  }
+
+  /* Textarea */
+  .textarea-field {
+    @apply w-full px-4 py-3 rounded resize-y;
+    background: var(--light-navy);
+    border: 1px solid var(--lightest-navy);
+    color: var(--lightest-slate);
+    font-size: 14px;
+    min-height: 120px;
+    transition: all 0.2s ease;
+  }
+
+  .textarea-field:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 2px var(--green-tint);
+  }
+
+  /* Link with underline animation */
+  .link-underline {
+    position: relative;
+    color: var(--green);
+  }
+
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background: var(--green);
+    transition: width 0.3s ease;
+  }
+
+  .link-underline:hover::after {
+    width: 100%;
+  }
+
+  /* Numbered section */
+  .numbered-section {
+    @apply flex items-baseline gap-2;
+  }
+
+  .numbered-section::before {
+    content: attr(data-number);
+    color: var(--green);
+    font-family: "SFMono-Regular", monospace;
+    font-size: 0.9em;
+    font-weight: 400;
+  }
+}
+
+/* Notion-like Editor Styles - Dark Theme */
+.notion-editor .ProseMirror {
+  @apply min-h-[500px] px-6 py-8 sm:px-10 sm:py-10 focus:outline-none;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--slate);
+  background: transparent;
 }
 
 .notion-editor .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
-  color: rgb(181, 181, 181);
+  color: var(--slate);
+  opacity: 0.5;
   pointer-events: none;
   height: 0;
   font-style: normal;
 }
 
 .notion-editor .ProseMirror > * + * {
-  margin-top: 0.5em;
+  margin-top: 0.75em;
 }
 
 .notion-editor .ProseMirror h1 {
-  @apply text-4xl font-bold;
+  @apply text-3xl font-bold;
   margin-top: 1.5em;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
   line-height: 1.2;
-  color: rgb(55, 53, 47);
+  color: var(--lightest-slate);
 }
 
 .notion-editor .ProseMirror h2 {
-  @apply text-3xl font-bold;
+  @apply text-2xl font-bold;
   margin-top: 1.4em;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
   line-height: 1.3;
-  color: rgb(55, 53, 47);
+  color: var(--lightest-slate);
 }
 
 .notion-editor .ProseMirror h3 {
-  @apply text-2xl font-bold;
+  @apply text-xl font-bold;
   margin-top: 1em;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
   line-height: 1.4;
-  color: rgb(55, 53, 47);
+  color: var(--lightest-slate);
 }
 
 .notion-editor .ProseMirror p {
-  margin: 0.5em 0;
-  line-height: 1.6;
+  margin: 0.75em 0;
+  line-height: 1.7;
 }
 
 .notion-editor .ProseMirror ul,
 .notion-editor .ProseMirror ol {
   padding-left: 1.5em;
-  margin: 0.5em 0;
+  margin: 0.75em 0;
 }
 
 .notion-editor .ProseMirror ul {
@@ -84,39 +341,38 @@ code {
 }
 
 .notion-editor .ProseMirror li {
-  margin: 0.25em 0;
+  margin: 0.35em 0;
   padding-left: 0.25em;
 }
 
 .notion-editor .ProseMirror blockquote {
-  border-left: 3px solid rgb(55, 53, 47);
+  border-left: 3px solid var(--green);
   padding-left: 1em;
   margin: 1em 0;
-  color: rgb(55, 53, 47);
-  font-style: normal;
+  color: var(--light-slate);
+  font-style: italic;
 }
 
 .notion-editor .ProseMirror code {
-  background: rgba(135, 131, 120, 0.15);
-  color: rgb(235, 87, 87);
-  border-radius: 3px;
+  background: var(--green-tint);
+  color: var(--green);
+  border-radius: 4px;
   padding: 0.2em 0.4em;
   font-size: 85%;
-  font-family:
-    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 .notion-editor .ProseMirror pre {
-  background: rgb(247, 246, 243);
-  border-radius: 3px;
-  padding: 1em;
+  background: var(--light-navy);
+  border: 1px solid var(--lightest-navy);
+  border-radius: 8px;
+  padding: 1.25em;
   margin: 1em 0;
   overflow-x: auto;
-  font-family:
-    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 14px;
-  line-height: 1.5;
-  color: rgb(55, 53, 47);
+  line-height: 1.6;
+  color: var(--lightest-slate);
 }
 
 .notion-editor .ProseMirror pre code {
@@ -126,12 +382,102 @@ code {
   font-size: inherit;
 }
 
-/* Selection */
-.notion-editor .ProseMirror ::selection {
-  background: rgba(45, 170, 219, 0.3);
+.notion-editor .ProseMirror img {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--lightest-navy);
 }
 
-/* Focus styles */
+/* Selection in editor */
+.notion-editor .ProseMirror ::selection {
+  background: var(--green-tint);
+  color: var(--green);
+}
+
 .notion-editor .ProseMirror:focus {
   outline: none;
 }
+
+/* Content prose for post display */
+.content-prose {
+  color: var(--slate);
+  line-height: 1.7;
+}
+
+.content-prose h1,
+.content-prose h2,
+.content-prose h3,
+.content-prose h4 {
+  color: var(--lightest-slate);
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.content-prose p {
+  margin-bottom: 1em;
+}
+
+.content-prose a {
+  color: var(--green);
+  border-bottom: 1px solid var(--green);
+  transition: all 0.2s ease;
+}
+
+.content-prose a:hover {
+  background: var(--green-tint);
+}
+
+.content-prose code {
+  color: var(--green);
+  background: var(--green-tint);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: "SFMono-Regular", monospace;
+  font-size: 0.9em;
+}
+
+.content-prose pre {
+  background: var(--light-navy);
+  border: 1px solid var(--lightest-navy);
+  border-radius: 8px;
+  padding: 1.25em;
+  overflow-x: auto;
+  color: var(--lightest-slate);
+}
+
+.content-prose img {
+  border-radius: 8px;
+  border: 1px solid var(--lightest-navy);
+  max-width: 100%;
+}
+
+.content-prose blockquote {
+  border-left: 3px solid var(--green);
+  padding-left: 1em;
+  margin: 1em 0;
+  color: var(--light-slate);
+  font-style: italic;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Stagger animation delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }

@@ -12,7 +12,7 @@ import Groups from "./pages/Groups";
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: 'var(--navy)', paddingTop: '64px' }}>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
