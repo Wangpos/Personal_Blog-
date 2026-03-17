@@ -13,7 +13,6 @@ export default function CommentSection({ postId }) {
   useEffect(() => {
     fetchComments();
 
-    // Subscribe to new comments
     const subscription = supabase
       .channel(`comments:${postId}`)
       .on(
@@ -105,8 +104,11 @@ export default function CommentSection({ postId }) {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
-        <MessageCircle className="h-6 w-6" />
+      <h3
+        className="text-2xl font-bold flex items-center space-x-2"
+        style={{ color: 'var(--lightest-slate)' }}
+      >
+        <MessageCircle className="h-6 w-6" style={{ color: 'var(--green)' }} />
         <span>Comments ({comments.length})</span>
       </h3>
 
@@ -118,28 +120,39 @@ export default function CommentSection({ postId }) {
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Write a comment..."
             rows={3}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="textarea-field"
           />
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary flex items-center space-x-2"
+            style={{ opacity: loading ? 0.7 : 1 }}
           >
             <Send className="h-4 w-4" />
             <span>{loading ? "Posting..." : "Post Comment"}</span>
           </button>
         </form>
       ) : (
-        <p className="text-gray-600">Please sign in to comment</p>
+        <p style={{ color: 'var(--slate)' }}>Please sign in to comment</p>
       )}
 
       {/* Comments List */}
       <div className="space-y-4">
         {comments.map((comment) => (
-          <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
+          <div
+            key={comment.id}
+            className="rounded-lg p-4"
+            style={{
+              background: 'var(--navy)',
+              border: '1px solid var(--lightest-navy)'
+            }}
+          >
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-3">
-                <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                <div
+                  className="h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: 'var(--green-tint)' }}
+                >
                   {comment.profiles?.avatar_url ? (
                     <img
                       src={comment.profiles.avatar_url}
@@ -147,7 +160,7 @@ export default function CommentSection({ postId }) {
                       className="h-10 w-10 rounded-full"
                     />
                   ) : (
-                    <span className="text-indigo-600 font-semibold">
+                    <span style={{ color: 'var(--green)' }} className="font-semibold">
                       {comment.profiles?.full_name?.charAt(0) ||
                         comment.profiles?.username?.charAt(0) ||
                         "?"}
@@ -156,22 +169,23 @@ export default function CommentSection({ postId }) {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
-                    <span className="font-medium text-gray-900">
+                    <span style={{ color: 'var(--lightest-slate)' }} className="font-medium">
                       {comment.profiles?.full_name ||
                         comment.profiles?.username}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span style={{ color: 'var(--slate)' }} className="text-sm">
                       {new Date(comment.created_at).toLocaleDateString()}
                     </span>
                   </div>
-                  <p className="mt-1 text-gray-700">{comment.content}</p>
+                  <p style={{ color: 'var(--light-slate)' }} className="mt-1">{comment.content}</p>
                 </div>
               </div>
 
               {user && user.id === comment.user_id && (
                 <button
                   onClick={() => handleDelete(comment.id)}
-                  className="text-red-600 hover:text-red-700"
+                  className="transition-colors hover:text-red-400"
+                  style={{ color: 'var(--slate)' }}
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

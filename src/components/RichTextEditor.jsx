@@ -6,7 +6,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Placeholder from "@tiptap/extension-placeholder";
-import { lowlight } from "lowlight"; // ✅ CORRECT IMPORT
+import { lowlight } from "lowlight";
 import {
   Bold,
   Italic,
@@ -19,7 +19,6 @@ import {
   ListOrdered,
   Quote,
   ImageIcon,
-  Palette,
 } from "lucide-react";
 import { useState, useCallback } from "react";
 import { uploadImage } from "../lib/supabaseStorage";
@@ -55,14 +54,22 @@ const MenuBar = ({ editor }) => {
   }, [editor]);
 
   const buttonClass = (isActive) =>
-    `p-2 rounded-md transition-all duration-150 ${
+    `p-2 rounded transition-all duration-150 ${
       isActive
-        ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+        ? "text-[var(--green)]"
+        : "text-[var(--slate)] hover:text-[var(--green)] hover:bg-[var(--green-tint)]"
     }`;
 
+  const dividerClass = "w-px h-6 mx-1";
+
   return (
-    <div className="sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 p-2 flex flex-wrap gap-1 z-10">
+    <div
+      className="sticky top-0 p-2 flex flex-wrap gap-1 z-10"
+      style={{
+        background: 'var(--light-navy)',
+        borderBottom: '1px solid var(--lightest-navy)'
+      }}
+    >
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
         className={buttonClass(editor.isActive("bold"))}
@@ -96,7 +103,7 @@ const MenuBar = ({ editor }) => {
         <Code className="h-4 w-4" />
       </button>
 
-      <div className="w-px h-6 bg-gray-300 dark:bg-gray-700 mx-1" />
+      <div className={dividerClass} style={{ background: 'var(--lightest-navy)' }} />
 
       <button
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -120,7 +127,7 @@ const MenuBar = ({ editor }) => {
         <Heading3 className="h-4 w-4" />
       </button>
 
-      <div className="w-px h-6 bg-gray-300 dark:bg-gray-700 mx-1" />
+      <div className={dividerClass} style={{ background: 'var(--lightest-navy)' }} />
 
       <button
         onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -144,7 +151,7 @@ const MenuBar = ({ editor }) => {
         <Quote className="h-4 w-4" />
       </button>
 
-      <div className="w-px h-6 bg-gray-300 dark:bg-gray-700 mx-1" />
+      <div className={dividerClass} style={{ background: 'var(--lightest-navy)' }} />
 
       <button
         onClick={addImage}
@@ -162,7 +169,7 @@ const MenuBar = ({ editor }) => {
 export default function RichTextEditor({
   content,
   onChange,
-  placeholder = "Press '/' for commands or just start typing...",
+  placeholder = "Start typing...",
 }) {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -244,11 +251,13 @@ export default function RichTextEditor({
 
   return (
     <div
-      className={`border rounded-lg overflow-hidden transition-all ${
-        isFocused
-          ? "border-indigo-500 dark:border-indigo-400 ring-2 ring-indigo-100 dark:ring-indigo-900"
-          : "border-gray-200 dark:border-gray-700"
-      }`}
+      className="rounded-lg overflow-hidden transition-all"
+      style={{
+        border: isFocused
+          ? '1px solid var(--green)'
+          : '1px solid var(--lightest-navy)',
+        boxShadow: isFocused ? '0 0 0 2px var(--green-tint)' : 'none'
+      }}
     >
       {isFocused && <MenuBar editor={editor} />}
       <EditorContent editor={editor} className="notion-editor" />

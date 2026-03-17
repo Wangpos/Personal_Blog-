@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
 import RichTextEditor from "../components/RichTextEditor";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function EditPost() {
@@ -97,18 +98,80 @@ export default function EditPost() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--navy)' }}>
+        <div style={{ color: 'var(--slate)' }}>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8" style={{ background: 'var(--navy)' }}>
       <div className="max-w-4xl mx-auto px-4">
+        {/* Action Bar */}
+        <div
+          className="flex items-center justify-between mb-6 p-4 rounded-lg"
+          style={{
+            background: 'var(--light-navy)',
+            border: '1px solid var(--lightest-navy)'
+          }}
+        >
+          <div className="flex items-center space-x-4">
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="flex items-center space-x-1 transition-colors hover:text-[var(--green)]"
+              style={{ color: 'var(--slate)' }}
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm">Back</span>
+            </button>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="publish"
+                checked={isPublished}
+                onChange={(e) => setIsPublished(e.target.checked)}
+                className="h-4 w-4 rounded"
+                style={{ accentColor: 'var(--green)' }}
+              />
+              <label htmlFor="publish" className="text-sm" style={{ color: 'var(--light-slate)' }}>
+                Published
+              </label>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="flex items-center space-x-1 text-red-400 hover:text-red-300 transition-colors"
+            >
+              <Trash2 className="h-4 w-4" />
+              <span className="text-sm">Delete</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(`/post/${id}`)}
+              className="btn-secondary"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="edit-form"
+              disabled={saving}
+              className="btn-primary"
+              style={{ opacity: saving ? 0.7 : 1 }}
+            >
+              {saving ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+        </div>
+
         <form
+          id="edit-form"
           onSubmit={handleSubmit}
-          className="bg-white rounded-lg shadow-lg p-6 space-y-6"
+          className="space-y-6"
         >
           <div>
             <input
@@ -116,7 +179,11 @@ export default function EditPost() {
               placeholder="Post title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-4xl font-bold border-none focus:outline-none focus:ring-0 placeholder-gray-300"
+              className="w-full text-4xl font-bold border-none focus:outline-none placeholder-opacity-30"
+              style={{
+                background: 'transparent',
+                color: 'var(--lightest-slate)'
+              }}
             />
           </div>
 
@@ -126,48 +193,6 @@ export default function EditPost() {
               onChange={setContent}
               placeholder="Tell your story..."
             />
-          </div>
-
-          <div className="flex items-center justify-between pt-4 border-t">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="publish"
-                  checked={isPublished}
-                  onChange={(e) => setIsPublished(e.target.checked)}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                />
-                <label htmlFor="publish" className="text-sm text-gray-700">
-                  Published
-                </label>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleDelete}
-                className="text-red-600 hover:text-red-700 text-sm font-medium"
-              >
-                Delete Post
-              </button>
-            </div>
-
-            <div className="flex space-x-3">
-              <button
-                type="button"
-                onClick={() => navigate(`/post/${id}`)}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={saving}
-                className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {saving ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
           </div>
         </form>
       </div>

@@ -20,7 +20,6 @@ export default function Groups() {
 
   const fetchGroups = async () => {
     try {
-      // Get groups where user is a member
       const { data: memberData, error: memberError } = await supabase
         .from("group_members")
         .select("group_id")
@@ -60,7 +59,6 @@ export default function Groups() {
     }
 
     try {
-      // Create group
       const { data: groupData, error: groupError } = await supabase
         .from("groups")
         .insert({
@@ -73,7 +71,6 @@ export default function Groups() {
 
       if (groupError) throw groupError;
 
-      // Add creator as admin member
       const { error: memberError } = await supabase
         .from("group_members")
         .insert({
@@ -96,25 +93,30 @@ export default function Groups() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-600">Loading groups...</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--navy)' }}>
+        <div style={{ color: 'var(--slate)' }}>Loading groups...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-5xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen py-12" style={{ background: 'var(--navy)' }}>
+      <div className="section-container max-w-5xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Groups</h1>
-            <p className="text-gray-600">
+            <h1
+              className="text-4xl font-bold mb-2"
+              style={{ color: 'var(--lightest-slate)' }}
+            >
+              <span style={{ color: 'var(--green)' }}>Groups</span>
+            </h1>
+            <p style={{ color: 'var(--slate)' }}>
               Collaborate with students and teachers
             </p>
           </div>
           <button
             onClick={() => setShowCreateForm(!showCreateForm)}
-            className="flex items-center space-x-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+            className="btn-primary flex items-center space-x-2"
           >
             <Plus className="h-5 w-5" />
             <span>Create Group</span>
@@ -123,15 +125,25 @@ export default function Groups() {
 
         {/* Create Group Form */}
         {showCreateForm && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
+          <div
+            className="rounded-lg p-6 mb-6"
+            style={{
+              background: 'var(--light-navy)',
+              border: '1px solid var(--lightest-navy)'
+            }}
+          >
+            <h2
+              className="text-xl font-bold mb-4"
+              style={{ color: 'var(--lightest-slate)' }}
+            >
               Create New Group
             </h2>
             <form onSubmit={handleCreateGroup} className="space-y-4">
               <div>
                 <label
                   htmlFor="groupName"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: 'var(--light-slate)' }}
                 >
                   Group Name
                 </label>
@@ -141,13 +153,14 @@ export default function Groups() {
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
                   placeholder="e.g., Computer Science Class 2024"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="input-field"
                 />
               </div>
               <div>
                 <label
                   htmlFor="groupDescription"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: 'var(--light-slate)' }}
                 >
                   Description
                 </label>
@@ -157,14 +170,11 @@ export default function Groups() {
                   onChange={(e) => setGroupDescription(e.target.value)}
                   placeholder="Describe the purpose of this group..."
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="textarea-field"
                 />
               </div>
               <div className="flex space-x-3">
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                >
+                <button type="submit" className="btn-primary">
                   Create
                 </button>
                 <button
@@ -174,7 +184,7 @@ export default function Groups() {
                     setGroupName("");
                     setGroupDescription("");
                   }}
-                  className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="btn-secondary"
                 >
                   Cancel
                 </button>
@@ -185,12 +195,24 @@ export default function Groups() {
 
         {/* Groups List */}
         {groups.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-            <UsersIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <div
+            className="rounded-lg p-12 text-center"
+            style={{
+              background: 'var(--light-navy)',
+              border: '1px solid var(--lightest-navy)'
+            }}
+          >
+            <UsersIcon
+              className="h-16 w-16 mx-auto mb-4"
+              style={{ color: 'var(--slate)' }}
+            />
+            <h3
+              className="text-xl font-semibold mb-2"
+              style={{ color: 'var(--lightest-slate)' }}
+            >
               No groups yet
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p style={{ color: 'var(--slate)' }}>
               Create a group to start collaborating
             </p>
           </div>
@@ -199,18 +221,24 @@ export default function Groups() {
             {groups.map((group) => (
               <div
                 key={group.id}
-                className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition"
+                className="glass-card p-6"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center">
-                      <UsersIcon className="h-6 w-6 text-indigo-600" />
+                    <div
+                      className="h-12 w-12 rounded-full flex items-center justify-center"
+                      style={{ background: 'var(--green-tint)' }}
+                    >
+                      <UsersIcon className="h-6 w-6" style={{ color: 'var(--green)' }} />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900">
+                      <h3
+                        className="text-xl font-bold"
+                        style={{ color: 'var(--lightest-slate)' }}
+                      >
                         {group.name}
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p style={{ color: 'var(--slate)' }} className="text-sm">
                         Created by{" "}
                         {group.profiles?.full_name || group.profiles?.username}
                       </p>
@@ -218,15 +246,21 @@ export default function Groups() {
                   </div>
                 </div>
 
-                <p className="text-gray-700 mb-4">
+                <p style={{ color: 'var(--light-slate)' }} className="mb-4">
                   {group.description || "No description"}
                 </p>
 
-                <div className="flex items-center justify-between pt-4 border-t">
-                  <span className="text-sm text-gray-600">
+                <div
+                  className="flex items-center justify-between pt-4"
+                  style={{ borderTop: '1px solid var(--lightest-navy)' }}
+                >
+                  <span style={{ color: 'var(--slate)' }} className="text-sm">
                     Created {new Date(group.created_at).toLocaleDateString()}
                   </span>
-                  <button className="flex items-center space-x-1 text-indigo-600 hover:text-indigo-700">
+                  <button
+                    className="flex items-center space-x-1 transition-colors hover:text-[var(--green)]"
+                    style={{ color: 'var(--green)' }}
+                  >
                     <UserPlus className="h-4 w-4" />
                     <span className="text-sm">View</span>
                   </button>
