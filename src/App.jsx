@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -8,11 +9,14 @@ import CreatePost from "./pages/CreatePost";
 import EditPost from "./pages/EditPost";
 import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
-import Groups from "./pages/Groups";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
-    <div className="min-h-screen" style={{ background: 'var(--navy)', paddingTop: '64px' }}>
+    <div
+      className="min-h-screen"
+      style={{ background: "var(--navy)", paddingTop: "64px" }}
+    >
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -45,11 +49,11 @@ function App() {
           }
         />
         <Route
-          path="/groups"
+          path="/admin"
           element={
-            <ProtectedRoute>
-              <Groups />
-            </ProtectedRoute>
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
           }
         />
       </Routes>

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { PenSquare, LogOut, User, Home, Users } from "lucide-react";
+import { PenSquare, LogOut, User, Home, Users, LayoutDashboard } from "lucide-react";
 
 export default function Navbar() {
   const { user, profile, signOut } = useAuth();
@@ -44,15 +44,7 @@ export default function Navbar() {
                 >
                   <Home className="h-4 w-4" />
                   <span>Home</span>
-                </Link>
-                <Link
-                  to="/groups"
-                  className="flex items-center space-x-1 px-4 py-2 rounded text-sm font-medium transition-all hover:text-[var(--green)]"
-                  style={{ color: 'var(--light-slate)' }}
-                >
-                  <Users className="h-4 w-4" />
-                  <span>Groups</span>
-                </Link>
+                </Link> 
               </div>
             )}
           </div>
@@ -67,6 +59,16 @@ export default function Navbar() {
                   <PenSquare className="h-4 w-4 mr-2" />
                   <span>Write</span>
                 </Link>
+                {profile?.role === "admin" && (
+                  <Link
+                    to="/admin"
+                    className="flex items-center space-x-2 px-3 py-2 rounded transition-all hover:text-[var(--green)]"
+                    style={{ color: 'var(--light-slate)' }}
+                  >
+                    <LayoutDashboard className="h-5 w-5" />
+                    <span className="hidden md:inline text-sm">Admin</span>
+                  </Link>
+                )}
                 <Link
                   to="/profile"
                   className="flex items-center space-x-2 px-3 py-2 rounded transition-all hover:text-[var(--green)]"
