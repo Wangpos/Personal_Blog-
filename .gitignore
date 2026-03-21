@@ -25,3 +25,8 @@ dist-ssr
 
 # Environment variables
 .env
+
+# database files
+database_migration.sql
+database_updated.sql
+database.sql
