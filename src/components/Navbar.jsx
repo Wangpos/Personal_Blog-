@@ -31,7 +31,7 @@ export default function Navbar() {
                 className="text-xl font-bold transition-colors group-hover:text-[var(--green)]"
                 style={{ color: 'var(--lightest-slate)' }}
               >
-                Blog
+                WANGS
               </span>
             </Link>
 
