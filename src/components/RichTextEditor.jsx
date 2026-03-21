@@ -72,6 +72,7 @@ const MenuBar = ({ editor }) => {
         background: "var(--light-navy)",
         borderBottom: "1px solid var(--lightest-navy)",
       }}
+      onMouseDown={(e) => e.preventDefault()}
     >
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -329,7 +330,7 @@ export default function RichTextEditor({
         boxShadow: isFocused ? "0 0 0 2px var(--green-tint)" : "none",
       }}
     >
-      {isFocused && <MenuBar editor={editor} />}
+      <MenuBar editor={editor} />
       <EditorContent editor={editor} className="notion-editor" />
     </div>
   );
