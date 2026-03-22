@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -6,6 +5,12 @@ import { supabase } from "../lib/supabase";
 import CommentSection from "../components/CommentSection";
 import { generateHTML } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
+import Underline from "@tiptap/extension-underline";
+import TextStyle from "@tiptap/extension-text-style";
+import Color from "@tiptap/extension-color";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { lowlight } from "lowlight";
 import { Eye, Heart, Edit, Clock, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -102,26 +107,47 @@ export default function PostDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--navy)' }}>
-        <div style={{ color: 'var(--slate)' }}>Loading...</div>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "var(--navy)" }}
+      >
+        <div style={{ color: "var(--slate)" }}>Loading...</div>
       </div>
     );
   }
 
   if (!post) return null;
 
-  const htmlContent = post.content
-    ? generateHTML(post.content, [StarterKit])
+  // Check if content is empty or only contains empty document structure
+  const hasContent =
+    post.content && post.content.content && post.content.content.length > 0;
+
+  const htmlContent = hasContent
+    ? generateHTML(post.content, [
+        StarterKit.configure({
+          codeBlock: false,
+        }),
+        Image.configure({
+          inline: true,
+          allowBase64: true,
+        }),
+        Underline,
+        TextStyle,
+        Color,
+        CodeBlockLowlight.configure({
+          lowlight,
+        }),
+      ])
     : "<p>No content</p>";
 
   return (
-    <div className="min-h-screen py-12" style={{ background: 'var(--navy)' }}>
+    <div className="min-h-screen py-12" style={{ background: "var(--navy)" }}>
       <div className="section-container max-w-4xl">
         {/* Back Link */}
         <Link
           to="/"
           className="inline-flex items-center space-x-2 mb-8 transition-colors hover:text-[var(--green)]"
-          style={{ color: 'var(--green)' }}
+          style={{ color: "var(--green)" }}
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to posts</span>
@@ -132,15 +158,15 @@ export default function PostDetail() {
           <div
             className="rounded-lg p-8 mb-6"
             style={{
-              background: 'var(--light-navy)',
-              border: '1px solid var(--lightest-navy)'
+              background: "var(--light-navy)",
+              border: "1px solid var(--lightest-navy)",
             }}
           >
             {/* Header */}
             <div className="mb-8">
               <h1
                 className="text-3xl md:text-4xl font-bold mb-6"
-                style={{ color: 'var(--lightest-slate)' }}
+                style={{ color: "var(--lightest-slate)" }}
               >
                 {post.title}
               </h1>
@@ -153,7 +179,7 @@ export default function PostDetail() {
                   >
                     <div
                       className="h-10 w-10 rounded-full flex items-center justify-center"
-                      style={{ background: 'var(--green-tint)' }}
+                      style={{ background: "var(--green-tint)" }}
                     >
                       {author?.avatar_url ? (
                         <img
@@ -162,25 +188,41 @@ export default function PostDetail() {
                           className="h-10 w-10 rounded-full"
                         />
                       ) : (
-                        <span style={{ color: 'var(--green)' }} className="font-semibold">
-                          {author?.full_name?.charAt(0) || author?.username?.charAt(0) || "?"}
+                        <span
+                          style={{ color: "var(--green)" }}
+                          className="font-semibold"
+                        >
+                          {author?.full_name?.charAt(0) ||
+                            author?.username?.charAt(0) ||
+                            "?"}
                         </span>
                       )}
                     </div>
                     <div>
-                      <div style={{ color: 'var(--lightest-slate)' }} className="font-medium">
+                      <div
+                        style={{ color: "var(--lightest-slate)" }}
+                        className="font-medium"
+                      >
                         {author?.full_name}
                       </div>
-                      <div style={{ color: 'var(--slate)' }} className="text-sm">
+                      <div
+                        style={{ color: "var(--slate)" }}
+                        className="text-sm"
+                      >
                         @{author?.username}
                       </div>
                     </div>
                   </Link>
 
-                  <div className="flex items-center space-x-4 text-sm" style={{ color: 'var(--slate)' }}>
+                  <div
+                    className="flex items-center space-x-4 text-sm"
+                    style={{ color: "var(--slate)" }}
+                  >
                     <span className="flex items-center space-x-1">
                       <Clock className="h-4 w-4" />
-                      <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                      <span>
+                        {new Date(post.created_at).toLocaleDateString()}
+                      </span>
                     </span>
                     <span className="flex items-center space-x-1">
                       <Eye className="h-4 w-4" />
@@ -193,7 +235,7 @@ export default function PostDetail() {
                   <Link
                     to={`/edit/${post.id}`}
                     className="flex items-center space-x-1 transition-colors hover:text-[var(--green)]"
-                    style={{ color: 'var(--green)' }}
+                    style={{ color: "var(--green)" }}
                   >
                     <Edit className="h-4 w-4" />
                     <span>Edit</span>
@@ -211,16 +253,18 @@ export default function PostDetail() {
             {/* Like Button */}
             <div
               className="flex items-center space-x-4 pt-6"
-              style={{ borderTop: '1px solid var(--lightest-navy)' }}
+              style={{ borderTop: "1px solid var(--lightest-navy)" }}
             >
               <button
                 onClick={handleLike}
                 className="flex items-center space-x-2 px-4 py-2 rounded transition"
                 style={{
-                  background: liked ? 'rgba(100, 255, 218, 0.1)' : 'transparent',
-                  border: '1px solid',
-                  borderColor: liked ? 'var(--green)' : 'var(--lightest-navy)',
-                  color: liked ? 'var(--green)' : 'var(--slate)'
+                  background: liked
+                    ? "rgba(100, 255, 218, 0.1)"
+                    : "transparent",
+                  border: "1px solid",
+                  borderColor: liked ? "var(--green)" : "var(--lightest-navy)",
+                  color: liked ? "var(--green)" : "var(--slate)",
                 }}
               >
                 <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
@@ -233,8 +277,8 @@ export default function PostDetail() {
           <div
             className="rounded-lg p-8"
             style={{
-              background: 'var(--light-navy)',
-              border: '1px solid var(--lightest-navy)'
+              background: "var(--light-navy)",
+              border: "1px solid var(--lightest-navy)",
             }}
           >
             <CommentSection postId={id} />

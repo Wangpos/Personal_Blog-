@@ -55,6 +55,11 @@ export default function EditPost() {
       return;
     }
 
+    if (!content.content || content.content.length === 0) {
+      toast.error("Please add some content to your post");
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -98,21 +103,24 @@ export default function EditPost() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--navy)' }}>
-        <div style={{ color: 'var(--slate)' }}>Loading...</div>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "var(--navy)" }}
+      >
+        <div style={{ color: "var(--slate)" }}>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-8" style={{ background: 'var(--navy)' }}>
+    <div className="min-h-screen py-8" style={{ background: "var(--navy)" }}>
       <div className="max-w-4xl mx-auto px-4">
         {/* Action Bar */}
         <div
           className="flex items-center justify-between mb-6 p-4 rounded-lg"
           style={{
-            background: 'var(--light-navy)',
-            border: '1px solid var(--lightest-navy)'
+            background: "var(--light-navy)",
+            border: "1px solid var(--lightest-navy)",
           }}
         >
           <div className="flex items-center space-x-4">
@@ -120,7 +128,7 @@ export default function EditPost() {
               type="button"
               onClick={() => navigate("/")}
               className="flex items-center space-x-1 transition-colors hover:text-[var(--green)]"
-              style={{ color: 'var(--slate)' }}
+              style={{ color: "var(--slate)" }}
             >
               <ArrowLeft className="h-4 w-4" />
               <span className="text-sm">Back</span>
@@ -132,9 +140,13 @@ export default function EditPost() {
                 checked={isPublished}
                 onChange={(e) => setIsPublished(e.target.checked)}
                 className="h-4 w-4 rounded"
-                style={{ accentColor: 'var(--green)' }}
+                style={{ accentColor: "var(--green)" }}
               />
-              <label htmlFor="publish" className="text-sm" style={{ color: 'var(--light-slate)' }}>
+              <label
+                htmlFor="publish"
+                className="text-sm"
+                style={{ color: "var(--light-slate)" }}
+              >
                 Published
               </label>
             </div>
@@ -168,11 +180,7 @@ export default function EditPost() {
           </div>
         </div>
 
-        <form
-          id="edit-form"
-          onSubmit={handleSubmit}
-          className="space-y-6"
-        >
+        <form id="edit-form" onSubmit={handleSubmit} className="space-y-6">
           <div>
             <input
               type="text"
@@ -181,8 +189,8 @@ export default function EditPost() {
               onChange={(e) => setTitle(e.target.value)}
               className="w-full text-4xl font-bold border-none focus:outline-none placeholder-opacity-30"
               style={{
-                background: 'transparent',
-                color: 'var(--lightest-slate)'
+                background: "transparent",
+                color: "var(--lightest-slate)",
               }}
             />
           </div>

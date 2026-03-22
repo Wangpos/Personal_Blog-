@@ -8,7 +8,10 @@ import toast from "react-hot-toast";
 
 export default function CreatePost() {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState(null);
+  const [content, setContent] = useState({
+    type: "doc",
+    content: [],
+  });
   const [isPublished, setIsPublished] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -19,6 +22,11 @@ export default function CreatePost() {
 
     if (!title.trim()) {
       toast.error("Please add a title");
+      return;
+    }
+
+    if (!content.content || content.content.length === 0) {
+      toast.error("Please add some content to your post");
       return;
     }
 
@@ -50,15 +58,15 @@ export default function CreatePost() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--navy)' }}>
+    <div className="min-h-screen" style={{ background: "var(--navy)" }}>
       <div className="max-w-4xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Fixed Action Bar */}
           <div
             className="sticky top-16 backdrop-blur-md px-8 py-4 z-20"
             style={{
-              background: 'rgba(10, 25, 47, 0.95)',
-              borderBottom: '1px solid var(--lightest-navy)'
+              background: "rgba(10, 25, 47, 0.95)",
+              borderBottom: "1px solid var(--lightest-navy)",
             }}
           >
             <div className="flex items-center justify-between">
@@ -67,7 +75,7 @@ export default function CreatePost() {
                   type="button"
                   onClick={() => navigate("/")}
                   className="flex items-center space-x-1 transition-colors hover:text-[var(--green)]"
-                  style={{ color: 'var(--slate)' }}
+                  style={{ color: "var(--slate)" }}
                 >
                   <ArrowLeft className="h-4 w-4" />
                   <span className="text-sm">Back</span>
@@ -80,12 +88,16 @@ export default function CreatePost() {
                     onChange={(e) => setIsPublished(e.target.checked)}
                     className="h-4 w-4 rounded"
                     style={{
-                      accentColor: 'var(--green)',
-                      background: 'var(--light-navy)',
-                      borderColor: 'var(--lightest-navy)'
+                      accentColor: "var(--green)",
+                      background: "var(--light-navy)",
+                      borderColor: "var(--lightest-navy)",
                     }}
                   />
-                  <label htmlFor="publish" className="text-sm" style={{ color: 'var(--light-slate)' }}>
+                  <label
+                    htmlFor="publish"
+                    className="text-sm"
+                    style={{ color: "var(--light-slate)" }}
+                  >
                     Publish
                   </label>
                 </div>
@@ -111,8 +123,8 @@ export default function CreatePost() {
               onChange={(e) => setTitle(e.target.value)}
               className="w-full text-4xl md:text-5xl font-bold border-none focus:outline-none placeholder-opacity-30"
               style={{
-                background: 'transparent',
-                color: 'var(--lightest-slate)',
+                background: "transparent",
+                color: "var(--lightest-slate)",
               }}
             />
           </div>
