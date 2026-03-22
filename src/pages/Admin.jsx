@@ -44,7 +44,6 @@ export default function Admin() {
     totalViews: 0,
     totalLikes: 0,
     totalComments: 0,
-    totalGroups: 0,
     storageUsed: 0,
     storageLimit: 1073741824, // 1GB in bytes
   });
@@ -52,7 +51,6 @@ export default function Admin() {
   // Data lists
   const [posts, setPosts] = useState([]);
   const [users, setUsers] = useState([]);
-  const [groups, setGroups] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {
@@ -90,21 +88,15 @@ export default function Admin() {
 
       if (commentsError) throw commentsError;
 
-      // Fetch groups count
-      const { count: groupsCount, error: groupsError } = await supabase
-        .from("groups")
-        .select("*", { count: "exact", head: true });
-
-      if (groupsError) throw groupsError;
-
       // Fetch storage info
-      const { data: storageData, error: storageError } = await supabase
-        .storage
-        .getBucket("blog-images");
+      const { data: storageData, error: storageError } =
+        await supabase.storage.getBucket("blog-images");
 
       // Calculate stats
-      const publishedPosts = postsData?.filter((p) => p.is_published).length || 0;
-      const totalViews = postsData?.reduce((sum, p) => sum + (p.views || 0), 0) || 0;
+      const publishedPosts =
+        postsData?.filter((p) => p.is_published).length || 0;
+      const totalViews =
+        postsData?.reduce((sum, p) => sum + (p.views || 0), 0) || 0;
 
       setStats({
         totalPosts: postsData?.length || 0,
@@ -114,15 +106,13 @@ export default function Admin() {
         totalViews,
         totalLikes: likesCount || 0,
         totalComments: commentsCount || 0,
-        totalGroups: groupsCount || 0,
         storageUsed: 0, // Will calculate from storage data
         storageLimit: 1073741824,
       });
 
       // Fetch detailed posts with author info
-      const { data: postsWithAuthors, error: postsWithAuthorsError } = await supabase
-        .from("posts")
-        .select("*, profiles(username, full_name)");
+      const { data: postsWithAuthors, error: postsWithAuthorsError } =
+        await supabase.from("posts").select("*, profiles(username, full_name)");
 
       if (postsWithAuthorsError) throw postsWithAuthorsError;
       setPosts(postsWithAuthors || []);
@@ -136,16 +126,11 @@ export default function Admin() {
       if (usersDataError) throw usersDataError;
       setUsers(usersData || []);
 
-      // Fetch groups
-      const { data: groupsData, error: groupsDataError } = await supabase
-        .from("groups")
-        .select("*, profiles(username, full_name)");
-
-      if (groupsDataError) throw groupsDataError;
-      setGroups(groupsData || []);
-
       // Generate recent activity
-      const activity = generateRecentActivity(postsWithAuthors || [], usersData || []);
+      const activity = generateRecentActivity(
+        postsWithAuthors || [],
+        usersData || [],
+      );
       setRecentActivity(activity);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -227,9 +212,13 @@ export default function Admin() {
   };
 
   const filteredPosts = posts.filter((post) => {
-    const matchesSearch = post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.profiles?.username?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filterStatus === "all" ||
+    const matchesSearch =
+      post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.profiles?.username
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase());
+    const matchesFilter =
+      filterStatus === "all" ||
       (filterStatus === "published" && post.is_published) ||
       (filterStatus === "draft" && !post.is_published);
     return matchesSearch && matchesFilter;
@@ -237,7 +226,10 @@ export default function Admin() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--navy)" }}>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "var(--navy)" }}
+      >
         <div className="text-center">
           <div className="animate-spin h-8 w-8 border-2 border-[var(--green)] border-t-transparent rounded-full mx-auto mb-4"></div>
           <p style={{ color: "var(--slate)" }}>Loading dashboard...</p>
@@ -259,7 +251,10 @@ export default function Admin() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold" style={{ color: "var(--lightest-slate)" }}>
+              <h1
+                className="text-2xl font-bold"
+                style={{ color: "var(--lightest-slate)" }}
+              >
                 Admin Dashboard
               </h1>
               <p style={{ color: "var(--slate)" }} className="text-sm">
@@ -281,7 +276,6 @@ export default function Admin() {
               { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
               { id: "posts", label: "Posts", icon: FileText },
               { id: "users", label: "Users", icon: Users },
-              { id: "groups", label: "Groups", icon: Activity },
               { id: "analytics", label: "Analytics", icon: BarChart3 },
             ].map((tab) => (
               <button
@@ -293,8 +287,12 @@ export default function Admin() {
                     : "text-[var(--slate)] hover:text-[var(--light-slate)]"
                 }`}
                 style={{
-                  background: activeTab === tab.id ? "var(--green-tint)" : "transparent",
-                  border: activeTab === tab.id ? "1px solid var(--green)" : "1px solid transparent",
+                  background:
+                    activeTab === tab.id ? "var(--green-tint)" : "transparent",
+                  border:
+                    activeTab === tab.id
+                      ? "1px solid var(--green)"
+                      : "1px solid transparent",
                 }}
               >
                 <tab.icon className="h-4 w-4" />
@@ -356,10 +354,16 @@ export default function Admin() {
                     className="h-10 w-10 rounded-lg flex items-center justify-center"
                     style={{ background: "rgba(100, 255, 218, 0.1)" }}
                   >
-                    <HardDrive className="h-5 w-5" style={{ color: "var(--green)" }} />
+                    <HardDrive
+                      className="h-5 w-5"
+                      style={{ color: "var(--green)" }}
+                    />
                   </div>
                   <div>
-                    <h3 style={{ color: "var(--lightest-slate)" }} className="font-semibold">
+                    <h3
+                      style={{ color: "var(--lightest-slate)" }}
+                      className="font-semibold"
+                    >
                       Storage Usage
                     </h3>
                     <p style={{ color: "var(--slate)" }} className="text-sm">
@@ -391,21 +395,19 @@ export default function Admin() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-4" style={{ borderTop: "1px solid var(--lightest-navy)" }}>
+                <div
+                  className="grid grid-cols-2 gap-4 pt-4"
+                  style={{ borderTop: "1px solid var(--lightest-navy)" }}
+                >
                   <div>
                     <p style={{ color: "var(--slate)" }} className="text-xs">
                       Database
                     </p>
-                    <p style={{ color: "var(--lightest-slate)" }} className="font-semibold">
+                    <p
+                      style={{ color: "var(--lightest-slate)" }}
+                      className="font-semibold"
+                    >
                       {stats.totalPosts} posts
-                    </p>
-                  </div>
-                  <div>
-                    <p style={{ color: "var(--slate)" }} className="text-xs">
-                      Groups
-                    </p>
-                    <p style={{ color: "var(--lightest-slate)" }} className="font-semibold">
-                      {stats.totalGroups} groups
                     </p>
                   </div>
                 </div>
@@ -419,11 +421,17 @@ export default function Admin() {
                   border: "1px solid var(--lightest-navy)",
                 }}
               >
-                <h3 style={{ color: "var(--lightest-slate)" }} className="font-semibold mb-4">
+                <h3
+                  style={{ color: "var(--lightest-slate)" }}
+                  className="font-semibold mb-4"
+                >
                   Quick Actions
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
-                  <Link to="/create" className="btn-primary text-center text-sm py-2">
+                  <Link
+                    to="/create"
+                    className="btn-primary text-center text-sm py-2"
+                  >
                     <FileText className="h-4 w-4 inline mr-1" />
                     New Post
                   </Link>
@@ -459,7 +467,10 @@ export default function Admin() {
                   border: "1px solid var(--lightest-navy)",
                 }}
               >
-                <h3 style={{ color: "var(--lightest-slate)" }} className="font-semibold mb-4">
+                <h3
+                  style={{ color: "var(--lightest-slate)" }}
+                  className="font-semibold mb-4"
+                >
                   Recent Activity
                 </h3>
                 <div className="space-y-3 max-h-64 overflow-y-auto">
@@ -502,7 +513,10 @@ export default function Admin() {
                           >
                             {activity.title}
                           </p>
-                          <p style={{ color: "var(--slate)" }} className="text-xs">
+                          <p
+                            style={{ color: "var(--slate)" }}
+                            className="text-xs"
+                          >
                             by {activity.user} •{" "}
                             {new Date(activity.timestamp).toLocaleDateString()}
                           </p>
@@ -514,14 +528,14 @@ export default function Admin() {
                               activity.status === "published"
                                 ? "rgba(100, 255, 218, 0.1)"
                                 : activity.status === "draft"
-                                ? "rgba(255, 183, 77, 0.1)"
-                                : "rgba(100, 181, 246, 0.1)",
+                                  ? "rgba(255, 183, 77, 0.1)"
+                                  : "rgba(100, 181, 246, 0.1)",
                             color:
                               activity.status === "published"
                                 ? "var(--green)"
                                 : activity.status === "draft"
-                                ? "#ffb74d"
-                                : "#64b5f6",
+                                  ? "#ffb74d"
+                                  : "#64b5f6",
                           }}
                         >
                           {activity.status}
@@ -637,7 +651,9 @@ export default function Admin() {
                       filteredPosts.map((post) => (
                         <tr
                           key={post.id}
-                          style={{ borderTop: "1px solid var(--lightest-navy)" }}
+                          style={{
+                            borderTop: "1px solid var(--lightest-navy)",
+                          }}
                         >
                           <td className="px-6 py-4">
                             <Link
@@ -648,7 +664,10 @@ export default function Admin() {
                               {post.title || "Untitled"}
                             </Link>
                           </td>
-                          <td className="px-6 py-4" style={{ color: "var(--slate)" }}>
+                          <td
+                            className="px-6 py-4"
+                            style={{ color: "var(--slate)" }}
+                          >
                             {post.profiles?.username || "Unknown"}
                           </td>
                           <td className="px-6 py-4">
@@ -661,7 +680,9 @@ export default function Admin() {
                                 background: post.is_published
                                   ? "rgba(100, 255, 218, 0.1)"
                                   : "rgba(255, 183, 77, 0.1)",
-                                color: post.is_published ? "var(--green)" : "#ffb74d",
+                                color: post.is_published
+                                  ? "var(--green)"
+                                  : "#ffb74d",
                               }}
                             >
                               {post.is_published ? (
@@ -677,10 +698,16 @@ export default function Admin() {
                               )}
                             </button>
                           </td>
-                          <td className="px-6 py-4" style={{ color: "var(--slate)" }}>
+                          <td
+                            className="px-6 py-4"
+                            style={{ color: "var(--slate)" }}
+                          >
                             {post.views || 0}
                           </td>
-                          <td className="px-6 py-4" style={{ color: "var(--slate)" }}>
+                          <td
+                            className="px-6 py-4"
+                            style={{ color: "var(--slate)" }}
+                          >
                             {new Date(post.created_at).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4">
@@ -785,7 +812,10 @@ export default function Admin() {
                               >
                                 {user.full_name || user.username}
                               </p>
-                              <p style={{ color: "var(--slate)" }} className="text-sm">
+                              <p
+                                style={{ color: "var(--slate)" }}
+                                className="text-sm"
+                              >
                                 @{user.username}
                               </p>
                             </div>
@@ -799,13 +829,19 @@ export default function Admin() {
                                 user.role === "admin"
                                   ? "rgba(100, 255, 218, 0.1)"
                                   : "rgba(100, 181, 246, 0.1)",
-                              color: user.role === "admin" ? "var(--green)" : "#64b5f6",
+                              color:
+                                user.role === "admin"
+                                  ? "var(--green)"
+                                  : "#64b5f6",
                             }}
                           >
                             {user.role || "Writer"}
                           </span>
                         </td>
-                        <td className="px-6 py-4" style={{ color: "var(--slate)" }}>
+                        <td
+                          className="px-6 py-4"
+                          style={{ color: "var(--slate)" }}
+                        >
                           {new Date(user.created_at).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4">
@@ -822,50 +858,6 @@ export default function Admin() {
                   </tbody>
                 </table>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Groups Tab */}
-        {activeTab === "groups" && (
-          <div className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {groups.map((group) => (
-                <div
-                  key={group.id}
-                  className="rounded-lg p-6"
-                  style={{
-                    background: "var(--light-navy)",
-                    border: "1px solid var(--lightest-navy)",
-                  }}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3
-                        className="font-semibold text-lg"
-                        style={{ color: "var(--lightest-slate)" }}
-                      >
-                        {group.name}
-                      </h3>
-                      <p style={{ color: "var(--slate)" }} className="text-sm">
-                        Created by {group.profiles?.username}
-                      </p>
-                    </div>
-                    <Activity className="h-5 w-5" style={{ color: "var(--green)" }} />
-                  </div>
-                  <p style={{ color: "var(--light-slate)" }} className="text-sm mb-4">
-                    {group.description || "No description"}
-                  </p>
-                  <div
-                    className="flex items-center justify-between pt-4"
-                    style={{ borderTop: "1px solid var(--lightest-navy)" }}
-                  >
-                    <span style={{ color: "var(--slate)" }} className="text-xs">
-                      Created {new Date(group.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         )}
@@ -891,7 +883,9 @@ export default function Admin() {
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span style={{ color: "var(--slate)" }}>Published Posts</span>
+                      <span style={{ color: "var(--slate)" }}>
+                        Published Posts
+                      </span>
                       <span style={{ color: "var(--lightest-slate)" }}>
                         {stats.publishedPosts}
                       </span>
@@ -915,7 +909,7 @@ export default function Admin() {
                   </div>
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span style={{ color: "var(--slate)"}}>Draft Posts</span>
+                      <span style={{ color: "var(--slate)" }}>Draft Posts</span>
                       <span style={{ color: "var(--lightest-slate)" }}>
                         {stats.draftPosts}
                       </span>
@@ -955,8 +949,14 @@ export default function Admin() {
                   Engagement Overview
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-lg" style={{ background: "var(--navy)" }}>
-                    <Heart className="h-5 w-5 mb-2" style={{ color: "var(--green)" }} />
+                  <div
+                    className="p-4 rounded-lg"
+                    style={{ background: "var(--navy)" }}
+                  >
+                    <Heart
+                      className="h-5 w-5 mb-2"
+                      style={{ color: "var(--green)" }}
+                    />
                     <p style={{ color: "var(--slate)" }} className="text-sm">
                       Total Likes
                     </p>
@@ -967,7 +967,10 @@ export default function Admin() {
                       {stats.totalLikes}
                     </p>
                   </div>
-                  <div className="p-4 rounded-lg" style={{ background: "var(--navy)" }}>
+                  <div
+                    className="p-4 rounded-lg"
+                    style={{ background: "var(--navy)" }}
+                  >
                     <MessageSquare
                       className="h-5 w-5 mb-2"
                       style={{ color: "#64b5f6" }}
@@ -982,8 +985,14 @@ export default function Admin() {
                       {stats.totalComments}
                     </p>
                   </div>
-                  <div className="p-4 rounded-lg" style={{ background: "var(--navy)" }}>
-                    <Eye className="h-5 w-5 mb-2" style={{ color: "#ba68c8" }} />
+                  <div
+                    className="p-4 rounded-lg"
+                    style={{ background: "var(--navy)" }}
+                  >
+                    <Eye
+                      className="h-5 w-5 mb-2"
+                      style={{ color: "#ba68c8" }}
+                    />
                     <p style={{ color: "var(--slate)" }} className="text-sm">
                       Total Views
                     </p>
@@ -994,8 +1003,14 @@ export default function Admin() {
                       {stats.totalViews}
                     </p>
                   </div>
-                  <div className="p-4 rounded-lg" style={{ background: "var(--navy)" }}>
-                    <TrendingUp className="h-5 w-5 mb-2" style={{ color: "#ffb74d" }} />
+                  <div
+                    className="p-4 rounded-lg"
+                    style={{ background: "var(--navy)" }}
+                  >
+                    <TrendingUp
+                      className="h-5 w-5 mb-2"
+                      style={{ color: "#ffb74d" }}
+                    />
                     <p style={{ color: "var(--slate)" }} className="text-sm">
                       Avg Views/Post
                     </p>
